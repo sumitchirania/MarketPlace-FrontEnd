@@ -14,13 +14,75 @@
         android:layout_height="wrap_content"
         android:id="@+id/textviewcontent"/>
 
-    <ListView
-        android:layout_width="match_parent"
+    <Button
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/listviewsaree"
-        android:layout_below="@+id/textviewcontent"
-        android:layout_marginTop="40dp">
+        android:id="@+id/buttontoeditprofile"
+        android:text="Edit Profile"
+        android:layout_above="@+id/buttontoviewprofile"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
-    </ListView>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttontodeleteprofile"
+        android:text="Delete Profile"
+        android:layout_above="@+id/buttontoaddcontent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="65dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttontoviewprofile"
+        android:text="View Profile"
+        android:layout_above="@+id/buttontodeleteprofile"
+        android:layout_alignRight="@+id/buttontoeditcontent"
+        android:layout_alignEnd="@+id/buttontoeditcontent" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttontoaddcontent"
+        android:text="Add Items"
+        android:layout_alignTop="@+id/buttontoeditcontent"
+        android:layout_alignRight="@+id/buttontoeditprofile"
+        android:layout_alignEnd="@+id/buttontoeditprofile" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttontoeditcontent"
+        android:text="Edit Items"
+        android:layout_marginBottom="72dp"
+        android:layout_above="@+id/buttontoviewcontent"
+        android:layout_alignRight="@+id/buttontoviewcontent"
+        android:layout_alignEnd="@+id/buttontoviewcontent" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttontodeletecontent"
+        android:text="Delete Items"
+        android:layout_alignTop="@+id/buttontoviewcontent"
+        android:layout_alignRight="@+id/buttontodeleteprofile"
+        android:layout_alignEnd="@+id/buttontodeleteprofile" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttontoviewcontent"
+        android:text="View Items"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/textviewcontent"
+        android:layout_alignEnd="@+id/textviewcontent"
+        android:layout_marginRight="38dp"
+        android:layout_marginEnd="38dp"
+        android:layout_marginBottom="50dp" />
+
+
+
+
 
 </RelativeLayout>

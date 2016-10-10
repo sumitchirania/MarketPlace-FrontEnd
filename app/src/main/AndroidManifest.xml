@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.chiru.sareesamrat">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -21,8 +21,10 @@
         <activity android:name=".ContentActivity" />
         <activity android:name=".RecyclerViewActivity" />
         <activity android:name=".ForgotPasswordActivity" />
-        <activity android:name=".WaitForAuthentication" />
-        <activity android:name=".FullPageActivity"></activity>
+        <activity android:name=".CrudOperations" />
+        <activity android:name=".FullPageActivity" />
+        <activity android:name=".ViewProfileActivity" />
+        <activity android:name=".AddItems"></activity>
     </application>
 
 </manifest>

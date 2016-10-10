@@ -24,7 +24,8 @@ public class LoginActivity extends AppCompatActivity {
     TextView textViewforgotpassword;
     private String TAG = LoginActivity.class.getSimpleName();
     private ProgressDialog pDialog;
-    String match_request, is_matched, username, password;
+    String match_request,username, password;
+    Boolean success;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private class GetPasswd extends AsyncTask<void, void, void> {
+    private class GetPasswd extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -85,24 +86,25 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... arg0) {
-            HttpRequestHandler pwordhandler = new HttpRequestHandler();
+            HttpRequestHandler pw = new HttpRequestHandler();
 
             Uri.Builder builder = new Uri.Builder();
             builder.scheme("http")
-                    .authority("127.0.0.1:8000")
+                    .authority("54.214.190.100")
                     .appendPath("login")
-                    .appendQueryParameter("username", username)
-                    .appendQueryParameter("password", password);
+                    .appendPath(username)
+                    .appendPath(password);
             String url = builder.build().toString();
 
-            String jsonStr = pwordhandler.makeServiceCall(url);
+            String jsonStr = pw.makeServiceCall(url);
 
             Log.e(TAG, "Response from url: " + jsonStr);
 
             if (jsonStr != null) {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
-                    match_request = jsonObj.getString("password");
+                    match_request = jsonObj.getString("match");
+                    success = jsonObj.getBoolean("success");
 
                 } catch (final JSONException e) {
                     Log.e(TAG, "Json parsing error: " + e.getMessage());
@@ -139,14 +141,14 @@ public class LoginActivity extends AppCompatActivity {
             if (pDialog.isShowing())
                 pDialog.dismiss();
 
-            if (is_matched == "True") {
+            if (success) {
                 Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getApplicationContext(), ContentActivity.class);
                 intent.putExtra("Username", username);
                 startActivity(intent);
             } else if (username.isEmpty() || password.isEmpty()) {
                 Toast.makeText(LoginActivity.this, "Please Fillin the required Fields", Toast.LENGTH_LONG).show();
-            } else if (is_matched == "False") {
+            } else if (!success && match_request == "False") {
                 Toast.makeText(LoginActivity.this, "Username and Password doesn't match", Toast.LENGTH_LONG).show();
             }
         }

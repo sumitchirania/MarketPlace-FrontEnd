@@ -22,40 +22,60 @@
         android:layout_height="wrap_content"
         android:id="@+id/edittextusername"
         android:hint="Username"
-        android:layout_marginTop="38dp"
         android:layout_below="@+id/edittextFullname"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/edittextemail"
+        android:hint="E-mail"
+        android:layout_below="@+id/edittextusername"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/edittextcontact"
+        android:hint="Contact No."
+        android:layout_below="@+id/edittextemail"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/edittextpassword"
         android:hint="Enter a Password"
-        android:layout_marginTop="39dp"
-        android:layout_below="@+id/edittextusername"
+        android:inputType="textPassword"
+        android:layout_below="@+id/edittextcontact"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:inputType="textPassword"/>
+        android:layout_alignParentStart="true" />
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/edittextrepassword"
         android:hint="Re-enter Password"
-        android:layout_marginTop="41dp"
-        android:layout_below="@+id/edittextpassword"
+        android:inputType="textPassword"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:inputType="textPassword"/>
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Do you own a Saree Shop"
+        android:text="Do you wish to register as Seller?"
         android:id="@+id/textviewshop"
-        android:layout_marginTop="39dp"
         android:layout_below="@+id/edittextrepassword"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="NOTE:  If you register as SELLER, you will be able to add your items for others to see."
+        android:textStyle="bold"
+        android:id="@+id/infotextview"
+        android:layout_above="@+id/radiogroup"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 

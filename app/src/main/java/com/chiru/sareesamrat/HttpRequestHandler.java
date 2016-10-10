@@ -18,7 +18,7 @@ import java.net.URL;
 public class HttpRequestHandler {
     private static final String TAG = HttpRequestHandler.class.getSimpleName();
 
-    public HttpHandler() {
+    public HttpRequestHandler() {
     }
 
     public String makeServiceCall(String reqUrl) {
@@ -63,4 +63,4 @@ public class HttpRequestHandler {
         return sb.toString();
     }
 }
-}
+

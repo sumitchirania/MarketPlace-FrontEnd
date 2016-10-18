@@ -12,36 +12,29 @@
 
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/profileview1"/>
-
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/profileview2"
-        android:layout_below="@+id/profileview1"
+        android:text="Name : "
+        android:id="@+id/textView8"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="54dp" />
-
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/profileview3"
-        android:layout_above="@+id/profileview4"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="68dp" />
-
+        android:id="@+id/profileview1"
+        android:layout_alignTop="@+id/textView8"
+        android:layout_alignLeft="@+id/profileview2"
+        android:layout_alignStart="@+id/profileview2"
+        android:textStyle="bold" />
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/profileview4"
-        android:layout_centerVertical="true"
+        android:text="Username : "
+        android:id="@+id/textView5"
+        android:layout_above="@+id/profileview3"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -49,11 +42,102 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/profileview2"
+        android:layout_marginTop="54dp"
+        android:layout_below="@+id/profileview1"
+        android:layout_toRightOf="@+id/editprofilebutton"
+        android:layout_toEndOf="@+id/editprofilebutton"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="E-mail : "
+        android:layout_alignTop="@+id/profileview3"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/profileview3"
+        android:enabled="false"
+        android:layout_below="@+id/profileview2"
+        android:layout_toRightOf="@+id/editprofilebutton"
+        android:layout_toEndOf="@+id/editprofilebutton"
+        android:layout_marginTop="54dp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Contact : "
+        android:id="@+id/textView7"
+        android:layout_alignTop="@+id/profileview4"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/profileview4"
+        android:enabled="false"
+        android:layout_centerVertical="true"
+        android:layout_alignLeft="@+id/profileview3"
+        android:layout_alignStart="@+id/profileview3"
+        android:layout_toRightOf="@+id/textView7"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Is Seller : "
+        android:id="@+id/textView6"
+        android:layout_alignTop="@+id/profileview5"
+        android:layout_alignRight="@+id/textView7"
+        android:layout_alignEnd="@+id/textView7" />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/profileview5"
+        android:layout_marginTop="47dp"
+        android:enabled="false"
         android:layout_below="@+id/profileview4"
+        android:layout_alignLeft="@+id/profileview4"
+        android:layout_alignStart="@+id/profileview4"
+        android:textStyle="bold"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editprofilebutton"
+        android:text="Edit"
+        android:layout_below="@+id/textView6"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="52dp" />
+        android:layout_marginTop="47dp" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/updateprofilebutton"
+        android:text="Update"
+        android:enabled="false"
+        android:layout_alignTop="@+id/editprofilebutton"
+        android:layout_alignRight="@+id/profileview5"
+        android:layout_alignEnd="@+id/profileview5" />
+
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/logoutbutton"
+        android:gravity="center"
+        android:text="Logout"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
 
 

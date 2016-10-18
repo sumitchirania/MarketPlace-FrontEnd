@@ -25,7 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     private String TAG = LoginActivity.class.getSimpleName();
     private ProgressDialog pDialog;
     String match_request,username, password;
-    Boolean success;
+    Boolean success = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         Toast.makeText(getApplicationContext(),
-                                "Couldn't get json from server. Check LogCat for possible errors!",
+                                "Couldn't get json from server.",
                                 Toast.LENGTH_LONG)
                                 .show();
                     }
@@ -150,6 +150,8 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "Please Fillin the required Fields", Toast.LENGTH_LONG).show();
             } else if (!success && match_request == "False") {
                 Toast.makeText(LoginActivity.this, "Username and Password doesn't match", Toast.LENGTH_LONG).show();
+            }else if(!success){
+                Toast.makeText(LoginActivity.this, "No Response From Server. Try Again in some Time", Toast.LENGTH_LONG).show();
             }
         }
 

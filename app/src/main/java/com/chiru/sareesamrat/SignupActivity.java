@@ -29,7 +29,7 @@ public class SignupActivity extends AppCompatActivity {
     RadioButton IsSeller;
     private ProgressDialog pDialog;
     String fullname, username, password, repassword, email, contact, seller_is;
-    Boolean success;
+    Boolean success = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,13 @@ public class SignupActivity extends AppCompatActivity {
 
                 int selectedId = Seller.getCheckedRadioButtonId();
                 IsSeller = (RadioButton) findViewById(selectedId);
-                seller_is = (String) IsSeller.getText().toString();
+                seller_is = IsSeller.getText().toString();
+                if (seller_is.equals("Yes")){
+                    seller_is = "True";
+                }
+                else{
+                    seller_is = "False";
+                }
 
 
                 if (fullname.isEmpty()) {
@@ -130,7 +136,7 @@ public class SignupActivity extends AppCompatActivity {
                 }
             } else {
                 Log.e(TAG, "Couldn't get json from server.");
-                Toast.makeText(getApplicationContext(), "Couldn't get json from server. Check LogCat for possible errors!",
+                Toast.makeText(getApplicationContext(), "Couldn't get json from server.",
                                 Toast.LENGTH_LONG).show();
 
 

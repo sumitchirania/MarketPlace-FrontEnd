@@ -10,77 +10,54 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CrudOperations extends AppCompatActivity {
+public class DeleteItems extends AppCompatActivity {
 
-    EditText updateemail,updatecontact,updateisseller;
-    Button finalupdate;
+    EditText editText;
+    Button button;
     ProgressDialog pDialog;
-    String url,username,email,contact,isseller;
-    Boolean statusUpdate, statusDelete;
-    String TAG = CrudOperations.class.getSimpleName();
-
-
+    private static String TAG = DeleteItems.class.getSimpleName();
+    String username,itemtitle;
+    Boolean deletestatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.crud_operations);
+        setContentView(R.layout.activity_delete_items);
 
-        updateemail = (EditText) findViewById(R.id.updateemail);
-        updatecontact = (EditText) findViewById(R.id.updatecontactno);
-        updateisseller = (EditText) findViewById(R.id.updateasseller);
-
-        finalupdate = (Button) findViewById(R.id.finalupdatebutton);
-
-        finalupdate.setOnClickListener(new View.OnClickListener() {
+        setupsubViews();
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                email = updateemail.getText().toString();
-                contact = updatecontact.getText().toString();
-                isseller = updateisseller.getText().toString();
-                if(isseller == "yes")
-                    isseller="True";
-                else
-                    isseller="False";
 
-
-                new UpdateProfile().execute();
-                username = getIntent().getExtras().getString("Username");
-
-                Uri.Builder builder = new Uri.Builder();
-                builder.scheme("http")
-                        .authority("54.214.190.100")
-                        .appendPath("users")
-                        .appendPath("update")
-                        .appendPath(username)
-                        .appendPath("")
-                        .appendQueryParameter("email", email)
-                        .appendQueryParameter("contact_no", contact)
-                        .appendQueryParameter("is_seller", isseller);
-
-
-                url = builder.build().toString();
-
+                itemtitle = editText.getText().toString();
+                new DeleteselectedItem().execute();
 
             }
         });
 
+    }
+    private void setupsubViews(){
+
+        editText = (EditText) findViewById(R.id.edittexttodeleteitemfinal);
+        button = (Button) findViewById(R.id.finaldeletebutton);
+
+        username = getIntent().getExtras().getString("Username");
 
 
     }
-    private class UpdateProfile extends AsyncTask<Void, Void, Void> {
+
+    private class DeleteselectedItem extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(CrudOperations.this);
-            pDialog.setMessage("Updating Profile...");
+            pDialog = new ProgressDialog(DeleteItems.this);
+            pDialog.setMessage("Deleting Item...");
             pDialog.setCancelable(false);
             pDialog.show();
         }
@@ -88,6 +65,17 @@ public class CrudOperations extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... arg0) {
             HttpRequestHandler pwordhandler = new HttpRequestHandler();
+
+            Uri.Builder builder = new Uri.Builder();
+            builder.scheme("http")
+                    .authority("54.214.190.100")
+                    .appendPath("items")
+                    .appendPath("delete")
+                    .appendPath(username)
+                    .appendPath(itemtitle);
+            ;
+
+            String url = builder.build().toString();
 
 
             String jsonStr = pwordhandler.makeServiceCall(url);
@@ -97,7 +85,7 @@ public class CrudOperations extends AppCompatActivity {
             if (jsonStr != null) {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
-                    statusUpdate= jsonObj.getBoolean("success");
+                    deletestatus= jsonObj.getBoolean("success");
 
                 } catch (final JSONException e) {
                     Log.e(TAG, "Json parsing error: " + e.getMessage());
@@ -134,19 +122,20 @@ public class CrudOperations extends AppCompatActivity {
             if (pDialog.isShowing())
                 pDialog.dismiss();
 
-            if (statusUpdate) {
-                Toast.makeText(CrudOperations.this, "Profile Successfully Updated", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(getApplicationContext(), ContentActivity.class);
+            if (deletestatus) {
+                Toast.makeText(getApplicationContext(),"Item Deleted Successfully", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(getApplicationContext(),ContentActivity.class);
                 intent.putExtra("Username", username);
                 startActivity(intent);
-            }else{
-                Toast.makeText(CrudOperations.this, "Check the fields Entered", Toast.LENGTH_LONG).show();
+            }
+            else{
+                Toast.makeText(getApplicationContext(),"Not Authorized to delete item", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(getApplicationContext(),ContentActivity.class);
+                intent.putExtra("Username", username);
+                startActivity(intent);
             }
         }
 
 
     }
 }
-
-
-

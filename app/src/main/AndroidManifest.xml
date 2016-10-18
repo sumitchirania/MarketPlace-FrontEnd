@@ -3,6 +3,7 @@
     package="com.chiru.sareesamrat">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -21,10 +22,10 @@
         <activity android:name=".ContentActivity" />
         <activity android:name=".RecyclerViewActivity" />
         <activity android:name=".ForgotPasswordActivity" />
-        <activity android:name=".CrudOperations" />
-        <activity android:name=".FullPageActivity" />
         <activity android:name=".ViewProfileActivity" />
-        <activity android:name=".AddItems"></activity>
+        <activity android:name=".AddItems" />
+        <activity android:name=".DeleteItems" />
+        <activity android:name=".EditContent"></activity>
     </application>
 
 </manifest>

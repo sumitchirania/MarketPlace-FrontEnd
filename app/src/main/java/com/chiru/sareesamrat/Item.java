@@ -3,21 +3,22 @@ package com.chiru.sareesamrat;
 /**
  * Created by chiru on 15/9/16.
  */
-public class Saree {
+public class Item {
 
 
-    private String description,price,imageurl,title;
+    public String description,price,imageurl,title,quantity;
 
-    public Saree(){
+    public Item(){
 
     }
 
-    public Saree(String description,String price,String imageurl,String title){
+    public Item(String description, String price, String imageurl, String title, String quantity){
 
         this.description = description;
         this.price = price;
         this.imageurl = imageurl;
         this.title = title;
+        this.quantity = quantity;
     }
 
     public String getDescription(){
@@ -47,4 +48,7 @@ public class Saree {
     public void setTitle(String title){
         this.title = title;
     }
+
+    public String getQuantity() { return quantity; }
+    public void setQuantity(String quantity) { this.quantity = quantity; }
 }

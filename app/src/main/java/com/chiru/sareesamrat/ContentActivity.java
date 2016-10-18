@@ -22,12 +22,12 @@ import org.json.JSONObject;
 public class ContentActivity extends AppCompatActivity implements View.OnClickListener {
 
     TextView textview;
-    Button editprofile,deleteprofile,viewprofile,additems,edititems,deleteitems,viewitems;
+    Button deleteprofile,viewprofile,additems,edititems,deleteitems,viewitems;
     String username, url,jsonResponse,name,email,viewurl;
     int contact;Boolean seller;
     ProgressDialog pDialog;
     String TAG = ContentActivity.class.getSimpleName();
-    Boolean deletestatus,readstatus;
+    Boolean deletestatus=false,readstatus=false;
 
 
 
@@ -43,7 +43,6 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         textview.setText("Hello" + " " + getIntent().getExtras().getString("Username"));
         username = getIntent().getExtras().getString("Username");
 
-        editprofile = (Button) findViewById(R.id.buttontoeditprofile);
         deleteprofile = (Button) findViewById(R.id.buttontodeleteprofile);
         viewprofile = (Button) findViewById(R.id.buttontoviewprofile);
         additems = (Button) findViewById(R.id.buttontoaddcontent);
@@ -52,28 +51,29 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         viewitems = (Button) findViewById(R.id.buttontoviewcontent);
 
 
-        editprofile.setOnClickListener(this);
-
         deleteprofile.setOnClickListener(this);
 
         viewprofile.setOnClickListener(this);
+
+        additems.setOnClickListener(this);
+
+        edititems.setOnClickListener(this);
+
+        deleteitems.setOnClickListener(this);
+
+        viewitems.setOnClickListener(this);
     }
 
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.buttontoeditprofile: {
-                Intent intent = new Intent(getApplicationContext(),CrudOperations.class);
-                intent.putExtra("Username", username);
-                startActivity(intent);
-                break;
-            }
-            case R.id.buttontodeleteprofile:{
+
+            case R.id.buttontodeleteprofile: {
                 new DeleteProfile().execute();
                 break;
             }
-            case R.id.buttontoviewprofile:{
+            case R.id.buttontoviewprofile: {
                 new ViewProfile().execute();
                 break;
             }
@@ -81,6 +81,25 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                 Intent intent = new Intent(getApplicationContext(),AddItems.class);
                 intent.putExtra("Username", username);
                 startActivity(intent);
+                break;
+            }
+            case  R.id.buttontodeletecontent: {
+                Intent intent = new Intent(getApplicationContext(),DeleteItems.class);
+                intent.putExtra("Username", username);
+                startActivity(intent);
+                break;
+            }
+            case R.id.buttontoeditcontent: {
+                Intent intent = new Intent(getApplicationContext(),EditContent.class);
+                intent.putExtra("Username", username);
+                startActivity(intent);
+                break;
+            }
+            case R.id.buttontoviewcontent: {
+                Intent intent = new Intent(getApplicationContext(), RecyclerViewActivity.class);
+                intent.putExtra("Username", username);
+                startActivity(intent);
+                break;
             }
         }
     }
@@ -101,7 +120,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
 
             Uri.Builder builder = new Uri.Builder();
             builder.scheme("http")
-                    .authority("54.214.190.100:8000")
+                    .authority("54.214.190.100")
                     .appendPath("users")
                     .appendPath("delete")
                     .appendPath(username);

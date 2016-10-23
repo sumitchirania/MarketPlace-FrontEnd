@@ -5,47 +5,116 @@
     android:orientation="vertical">
 
 
+       <TextView
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:text="Title: "
+           android:textStyle="italic"
+           android:id="@+id/textView12"
+           android:layout_alignParentTop="true"
+           android:layout_alignParentLeft="true"
+           android:layout_alignParentStart="true"/>
+
+
+       <TextView
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:id="@+id/titleofitem"
+           android:textStyle="bold"
+           android:layout_alignParentTop="true"
+           android:layout_alignRight="@+id/textView12"
+           android:layout_marginLeft="100dp"
+           android:layout_marginStart="100dp"
+           android:text="A"/>
+
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/titleofitem"
+        android:text="Description: "
+        android:textStyle="italic"
+        android:layout_below="@+id/textView12"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"/>
+        android:layout_alignParentStart="true"
+        android:id="@+id/textView13"/>
 
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/descriptionofitem"
+        android:maxLength="80"
+        android:maxLines="3"
+        android:textStyle="bold"
         android:layout_below="@+id/titleofitem"
+        android:layout_alignLeft="@+id/titleofitem"
+        android:layout_alignStart="@+id/titleofitem" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Price: "
+        android:textStyle="italic"
+        android:layout_below="@+id/textView13"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/textView10" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/priceofitem"
+        android:textStyle="bold"
+        android:layout_below="@+id/descriptionofitem"
+        android:layout_alignLeft="@+id/descriptionofitem"
+        android:layout_alignStart="@+id/descriptionofitem" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Quantity: "
+        android:textStyle="italic"
+        android:layout_below="@+id/textView10"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/textView11" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/quantityofitem"
+        android:textStyle="bold"
+        android:layout_below="@+id/priceofitem"
+        android:layout_alignLeft="@+id/priceofitem"
+        android:layout_alignStart="@+id/priceofitem" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ImageURL: "
+        android:textStyle="italic"
+        android:id="@+id/textView9"
+        android:layout_below="@+id/textView11"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/priceofitem"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/descriptionofitem" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/quantityofitem"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/priceofitem"/>
+        android:id="@+id/imageurlofitem"
+        android:textStyle="bold"
+        android:layout_below="@+id/quantityofitem"
+        android:layout_alignLeft="@+id/quantityofitem"
+        android:layout_alignStart="@+id/quantityofitem" />
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="400dp"
         android:id="@+id/imageofitem1"
-        android:layout_below="@+id/quantityofitem"
+        android:layout_below="@+id/textView9"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:src="@drawable/addimage"/>
-
-
+        android:padding="5dp"
+        android:scaleType="fitXY"/>
 
 </RelativeLayout>

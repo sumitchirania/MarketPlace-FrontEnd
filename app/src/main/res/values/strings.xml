@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">SareeSamrat</string>
+    <string name="app_name">Online Catalog</string>
+    <string name="context">Welcome to the Online Catalogue App. This App lets you add your Shop items online for users to see.
+        It is not a platform to buy Items, but you can share your contact for users to contact you.</string>
 </resources>

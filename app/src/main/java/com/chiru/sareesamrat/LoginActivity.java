@@ -13,18 +13,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText UnameField, PwordField;
-    Button LoginButton, SignupButton;
-    TextView textViewforgotpassword;
+    EditText usernameField, passwordField;
+    Button loginButton, signUpButton;
+    TextView textViewForgotPassword;
     private String TAG = LoginActivity.class.getSimpleName();
     private ProgressDialog pDialog;
-    String match_request,username, password;
+    String match_request,username,password,message = "Network Problem. Try again later.";
     Boolean success = false;
 
     @Override
@@ -33,47 +32,54 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
 
-        UnameField = (EditText) findViewById(R.id.edittextUname);
-        PwordField = (EditText) findViewById(R.id.edittextPword);
-        LoginButton = (Button) findViewById(R.id.buttonLogin);
-        SignupButton = (Button) findViewById(R.id.buttonSignup);
-        textViewforgotpassword = (TextView) findViewById(R.id.textviewforgotpassword);
+
+        usernameField = (EditText) findViewById(R.id.edittextUname);
+        passwordField = (EditText) findViewById(R.id.edittextPword);
+        loginButton = (Button) findViewById(R.id.buttonLogin);
+        signUpButton = (Button) findViewById(R.id.buttonSignup);
+        textViewForgotPassword = (TextView) findViewById(R.id.textviewforgotpassword);
 
 
-        textViewforgotpassword.setOnClickListener(new View.OnClickListener() {
+        textViewForgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                Intent intentpaswrd = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
-                startActivity(intentpaswrd);
+                Intent intent = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
+                startActivity(intent);
             }
         });
 
-        LoginButton.setOnClickListener(new View.OnClickListener() {
+        loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                username = UnameField.getText().toString();
-                password = PwordField.getText().toString();
+                username = usernameField.getText().toString();
+                password = passwordField.getText().toString();
 
-                new GetPasswd().execute();
+                if (username.isEmpty() || password.isEmpty()) {
+                    Toast.makeText(LoginActivity.this, "Please Fill the required Fields", Toast.LENGTH_LONG).show();
+
+                }
+                else {
+                    new getPassword().execute();
+                }
 
 
             }
         });
-        SignupButton.setOnClickListener(new View.OnClickListener() {
+        signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                Intent intentSignup = new Intent(getApplicationContext(), SignupActivity.class);
-                startActivity(intentSignup);
+                Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
+                startActivity(intent);
             }
         });
 
 
     }
 
-    private class GetPasswd extends AsyncTask<Void, Void, Void> {
+    private class getPassword extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -86,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... arg0) {
-            HttpRequestHandler pw = new HttpRequestHandler();
+            HttpRequestHandler httpRequestHandler = new HttpRequestHandler();
 
             Uri.Builder builder = new Uri.Builder();
             builder.scheme("http")
@@ -96,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
                     .appendPath(password);
             String url = builder.build().toString();
 
-            String jsonStr = pw.makeServiceCall(url);
+            String jsonStr = httpRequestHandler.makeServiceCall(url);
 
             Log.e(TAG, "Response from url: " + jsonStr);
 
@@ -105,31 +111,14 @@ public class LoginActivity extends AppCompatActivity {
                     JSONObject jsonObj = new JSONObject(jsonStr);
                     match_request = jsonObj.getString("match");
                     success = jsonObj.getBoolean("success");
+                    message = jsonObj.getString("msg");
 
                 } catch (final JSONException e) {
                     Log.e(TAG, "Json parsing error: " + e.getMessage());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),
-                                    "Json parsing error: " + e.getMessage(),
-                                    Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    });
 
                 }
             } else {
                 Log.e(TAG, "Couldn't get json from server.");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(),
-                                "Couldn't get json from server.",
-                                Toast.LENGTH_LONG)
-                                .show();
-                    }
-                });
 
             }
             return null;
@@ -141,17 +130,17 @@ public class LoginActivity extends AppCompatActivity {
             if (pDialog.isShowing())
                 pDialog.dismiss();
 
-            if (success) {
-                Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_LONG).show();
+            if (success && match_request.equals("True")) {
+                Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), ContentActivity.class);
                 intent.putExtra("Username", username);
                 startActivity(intent);
-            } else if (username.isEmpty() || password.isEmpty()) {
-                Toast.makeText(LoginActivity.this, "Please Fillin the required Fields", Toast.LENGTH_LONG).show();
-            } else if (!success && match_request == "False") {
-                Toast.makeText(LoginActivity.this, "Username and Password doesn't match", Toast.LENGTH_LONG).show();
+
+            } else if (success && match_request.equals("False")) {
+                Toast.makeText(LoginActivity.this, "Username and Password doesn't match", Toast.LENGTH_SHORT).show();
+
             }else if(!success){
-                Toast.makeText(LoginActivity.this, "No Response From Server. Try Again in some Time", Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
             }
         }
 

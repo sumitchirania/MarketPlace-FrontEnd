@@ -6,19 +6,20 @@ package com.chiru.sareesamrat;
 public class Item {
 
 
-    public String description,price,imageurl,title,quantity;
+    public String description,price,imageurl,title,quantity,seller_id;
 
     public Item(){
 
     }
 
-    public Item(String description, String price, String imageurl, String title, String quantity){
+    public Item(String description, String price, String imageurl, String title, String quantity, String seller_id){
 
         this.description = description;
         this.price = price;
         this.imageurl = imageurl;
         this.title = title;
         this.quantity = quantity;
+        this.seller_id = seller_id;
     }
 
     public String getDescription(){
@@ -51,4 +52,7 @@ public class Item {
 
     public String getQuantity() { return quantity; }
     public void setQuantity(String quantity) { this.quantity = quantity; }
+
+    public String getSeller_id() { return seller_id; }
+    public void setSeller_id(String seller_id) { this.seller_id = seller_id; }
 }

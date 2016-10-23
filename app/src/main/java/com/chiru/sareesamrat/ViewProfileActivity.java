@@ -15,16 +15,17 @@ import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
+
+import java.util.regex.Pattern;
 
 public class ViewProfileActivity extends AppCompatActivity implements View.OnClickListener{
 
     TextView tv1, tv2, tv3, tv4, tv5;
-    Button editbutton, updatebutton,logoutbutton;
+    Button editButton, updateButton, logoutButton;
     ProgressDialog pDialog;
     String username,email,contact,is_seller;
     private static String TAG = ViewProfileActivity.class.getSimpleName();
-    Boolean updatestatus;
+    Boolean updateStatus;
 
 
 
@@ -34,14 +35,14 @@ public class ViewProfileActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.activity_view_profile);
         SetupSubviews();
 
-        editbutton.setOnClickListener(this);
+        editButton.setOnClickListener(this);
 
         tv3.setOnClickListener(this);
         tv4.setOnClickListener(this);
         tv5.setOnClickListener(this);
 
-        updatebutton.setOnClickListener(this);
-        logoutbutton.setOnClickListener(this);
+        updateButton.setOnClickListener(this);
+        logoutButton.setOnClickListener(this);
 
     }
     private void SetupSubviews(){
@@ -53,17 +54,17 @@ public class ViewProfileActivity extends AppCompatActivity implements View.OnCli
         tv5 = (TextView) findViewById(R.id.profileview5);
 
         tv1.setText(getIntent().getExtras().getString("name"));
-        tv2.setText(getIntent().getExtras().getString("username"));
+        tv2.setText(getIntent().getExtras().getString("usernameString"));
         tv3.setText(getIntent().getExtras().getString("email"));
-        tv4.setText(getIntent().getExtras().getInt("contact")+"");
+        tv4.setText(getIntent().getExtras().getLong("contact")+"");
         String sellerStr = getIntent().getExtras().getBoolean("seller") ? "true" : "false";
         tv5.setText(sellerStr);
 
-        editbutton = (Button) findViewById(R.id.editprofilebutton);
-        updatebutton = (Button) findViewById(R.id.updateprofilebutton);
-        logoutbutton  = (Button) findViewById(R.id.logoutbutton);
+        editButton = (Button) findViewById(R.id.editprofilebutton);
+        updateButton = (Button) findViewById(R.id.updateprofilebutton);
+        logoutButton = (Button) findViewById(R.id.logoutbutton);
 
-        username = getIntent().getExtras().getString("username");
+        username = getIntent().getExtras().getString("usernameString");
 
 
     }
@@ -72,8 +73,8 @@ public class ViewProfileActivity extends AppCompatActivity implements View.OnCli
         switch (view.getId()) {
 
             case R.id.editprofilebutton: {
-                editbutton.setEnabled(false);
-                updatebutton.setEnabled(true);
+                editButton.setEnabled(false);
+                updateButton.setEnabled(true);
                 tv3.setEnabled(true);
                 tv4.setEnabled(true);
                 tv5.setEnabled(true);
@@ -81,15 +82,15 @@ public class ViewProfileActivity extends AppCompatActivity implements View.OnCli
             }
 
             case R.id.profileview3: {
-                performedit(tv3);
+                performEdit(tv3);
                 break;
             }
             case R.id.profileview4: {
-                performedit(tv4);
+                performEdit(tv4);
                 break;
             }
             case R.id.profileview5: {
-                performedit(tv5);
+                performEdit(tv5);
                 break;
             }
             case R.id.updateprofilebutton: {
@@ -97,7 +98,15 @@ public class ViewProfileActivity extends AppCompatActivity implements View.OnCli
                 email = tv3.getText().toString();
                 contact = tv4.getText().toString();
                 is_seller = tv5.getText().toString();
-                new UpdateProfile().execute();
+                if (!isValidEmail(email)) {
+                    Toast.makeText(ViewProfileActivity.this, "Enter a valid Email", Toast.LENGTH_LONG).show();
+
+                }else if(!isValidContact(contact) && is_seller.equals("True")) {
+                    Toast.makeText(ViewProfileActivity.this, "Enter a Valid Contact", Toast.LENGTH_LONG).show();
+
+                }else
+                    new UpdateProfile().execute();
+
                 break;
             }
             case R.id.logoutbutton: {
@@ -107,7 +116,7 @@ public class ViewProfileActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    private void performedit(TextView tv){
+    private void performEdit(TextView tv){
 
         tv.setCursorVisible(true);
         tv.setFocusableInTouchMode(true);
@@ -153,7 +162,7 @@ public class ViewProfileActivity extends AppCompatActivity implements View.OnCli
             if (jsonStr != null) {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
-                    updatestatus= jsonObj.getBoolean("success");
+                    updateStatus = jsonObj.getBoolean("success");
 
                 } catch (final JSONException e) {
                     Log.e(TAG, "Json parsing error: " + e.getMessage());
@@ -190,7 +199,7 @@ public class ViewProfileActivity extends AppCompatActivity implements View.OnCli
             if (pDialog.isShowing())
                 pDialog.dismiss();
 
-            if (updatestatus) {
+            if (updateStatus) {
                 Toast.makeText(getApplicationContext(),"Profile Successfully Updated", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getApplicationContext(),ContentActivity.class);
                 intent.putExtra("Username", username);
@@ -199,6 +208,22 @@ public class ViewProfileActivity extends AppCompatActivity implements View.OnCli
         }
 
 
+    }
+    private boolean isValidEmail(String email){
+
+        final Pattern EMAIL_ADDRESS_PATTERN = Pattern.compile("[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+                "\\@" +
+                "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+                "(" +
+                "\\." +
+                "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+                ")+");
+        return EMAIL_ADDRESS_PATTERN.matcher(email).matches();
+    }
+
+    private boolean isValidContact(String contact){
+        Pattern CONTACT_NO_PATTERN = Pattern.compile("[0-9]{10,11}");
+        return CONTACT_NO_PATTERN.matcher(contact).matches();
     }
 
 

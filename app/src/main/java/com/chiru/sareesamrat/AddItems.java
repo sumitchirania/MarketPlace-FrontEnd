@@ -1,15 +1,13 @@
 package com.chiru.sareesamrat;
 
 import android.app.ProgressDialog;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -21,51 +19,34 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class AddItems extends AppCompatActivity implements View.OnClickListener {
 
     EditText et1, et2, et3, et4;
     ImageButton ib1;
-    Button finaladd;
+    Button finalAdd;
     private static int RESULT_LOAD_IMAGE = 1;
     ProgressDialog pDialog;
-    String username, title, description, price, quantity,imagestring,pic_uri;
+    String username, title, description, price, quantity, imageString,pic_uri = "/static/images/default.jpg";
     private static String TAG = AddItems.class.getSimpleName();
-    Boolean addstatus,success = false;
+    Boolean addStatus = false,success = false;
     public static String URL = "http://54.214.190.100/saveimage/";
-    private final Context context = this;
-    private final String twoHyphens = "--";
-    private final String lineEnd = "\r\n";
-    private final String boundary = "apiclient-" + System.currentTimeMillis();
-    private final String mimeType = "multipart/form-data;boundary=" + boundary;
-    private byte[] multipartBody;
     private Bitmap bitmap;
+    String message = "Network Problem. Try again later.";
 
 
     @Override
@@ -77,7 +58,7 @@ public class AddItems extends AppCompatActivity implements View.OnClickListener 
 
         ib1.setOnClickListener(this);
 
-        finaladd.setOnClickListener(this);
+        finalAdd.setOnClickListener(this);
 
 
     }
@@ -91,7 +72,7 @@ public class AddItems extends AppCompatActivity implements View.OnClickListener 
 
         ib1 = (ImageButton) findViewById(R.id.imagebutton1);
 
-        finaladd = (Button) findViewById(R.id.finaladdbutton);
+        finalAdd = (Button) findViewById(R.id.finaladdbutton);
 
         username = getIntent().getExtras().getString("Username");
 
@@ -105,19 +86,36 @@ public class AddItems extends AppCompatActivity implements View.OnClickListener 
         switch (view.getId()) {
             case R.id.imagebutton1: {
                 imageBrowse();
-
-                if(success){
-                    finaladd.setEnabled(true);
-                }
                 break;
             }
             case R.id.finaladdbutton: {
 
-                new AddNewItems().execute();
+
                 title = et1.getText().toString();
                 description = et2.getText().toString();
                 quantity = et3.getText().toString();
                 price = et4.getText().toString();
+
+                if(title.isEmpty()||description.isEmpty()||quantity.isEmpty()||price.isEmpty()){
+
+                    Toast.makeText(AddItems.this, "All Fields are required.Don't leave it blank", Toast.LENGTH_SHORT).show();
+
+                }else if(!isValidTitle(title)){
+
+                    Toast.makeText(AddItems.this, "Enter a valid Title", Toast.LENGTH_SHORT).show();
+
+                }else if(!isValidQuantity(quantity)){
+
+                    Toast.makeText(AddItems.this, "Enter a valid Quantity", Toast.LENGTH_SHORT).show();
+
+                }else if(!isValidPrice(price)){
+
+                    Toast.makeText(AddItems.this, "Enter a valid Price", Toast.LENGTH_SHORT).show();
+
+                }else {
+
+                    new AddNewItems().execute();
+                }
                 break;
             }
         }
@@ -130,16 +128,15 @@ public class AddItems extends AppCompatActivity implements View.OnClickListener 
 
     }
     @Override
-    public void onActivityResult(int requestcode, int responsecode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        super.onActivityResult(requestcode, responsecode, data);
-        if (requestcode == RESULT_LOAD_IMAGE && responsecode == RESULT_OK && null != data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
 
             Uri imagePath = data.getData();
             ib1.setImageURI(imagePath);
 
             uploadImage();
-
 
         }
 
@@ -151,61 +148,62 @@ public class AddItems extends AppCompatActivity implements View.OnClickListener 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
         byte[] image = byteArrayOutputStream.toByteArray();
-        imagestring = Base64.encodeToString(image,Base64.DEFAULT);
-        return imagestring;
+        imageString = Base64.encodeToString(image,Base64.DEFAULT);
+        return imageString;
 
     }
 
-   
 
 
-   private void uploadImage(){
 
-        bitmap= ((BitmapDrawable) ib1.getDrawable()).getBitmap();
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL,
-            new Response.Listener<String>() {
-                @Override
-                public void onResponse(String s) {
-                    try{
-                        JSONObject jsonObject = new JSONObject(s);
-                        success = jsonObject.getString("success").equalsIgnoreCase("true")? true:false;
-                        pic_uri = jsonObject.getString("url");
-                    }catch (JSONException e){
+   private void uploadImage() {
 
-                    }
+       bitmap = ((BitmapDrawable) ib1.getDrawable()).getBitmap();
+       StringRequest stringRequest = new StringRequest(Request.Method.POST, URL,
+               new Response.Listener<String>() {
+                   @Override
+                   public void onResponse(String s) {
+                       try {
+                           JSONObject jsonObject = new JSONObject(s);
+                           success = jsonObject.getBoolean("success");
+                           pic_uri = jsonObject.getString("url");
+                           if (!success) {
 
+                               Toast.makeText(AddItems.this, "Image Uploading failed, Image will not be changed.", Toast.LENGTH_LONG).show();
+                           }
 
-                    Toast.makeText(AddItems.this, s , Toast.LENGTH_LONG).show();
-                }
-            },
-            new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError volleyError) {
+                       } catch (JSONException e) {
 
-                    Toast.makeText(AddItems.this, volleyError.getMessage().toString(), Toast.LENGTH_LONG).show();
-                }
-            }){
-        @Override
-        protected Map<String, String> getParams() throws AuthFailureError {
+                       }
+                   }
+               },
+               new Response.ErrorListener() {
+                   @Override
+                   public void onErrorResponse(VolleyError volleyError) {
 
-            String image = getStringForImage(bitmap);
-            String imagename = et1.getText().toString();
-            String user = getIntent().getExtras().getString("Username");
-            Map<String,String> params = new Hashtable<>();
+                       Toast.makeText(AddItems.this, "Network Error", Toast.LENGTH_LONG).show();
+                   }
+               }) {
+           @Override
+           protected Map<String, String> getParams() throws AuthFailureError {
 
-            params.put("image", image);
-            params.put("title" ,imagename);
-            params.put("username", user);
+               String image = getStringForImage(bitmap);
+               String imageName = et1.getText().toString();
+               String user = username;
+               Map<String, String> params = new Hashtable<>();
 
-            return params;
-        }
-    };
+               params.put("image", image);
+               params.put("title", imageName);
+               params.put("username", user);
 
-    RequestQueue requestQueue = Volley.newRequestQueue(this);
-        
-    requestQueue.add(stringRequest);
-}
+               return params;
+           }
+       };
 
+       RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+       requestQueue.add(stringRequest);
+   }
 
     private class AddNewItems extends AsyncTask<Void, Void, Void> {
 
@@ -246,32 +244,15 @@ public class AddItems extends AppCompatActivity implements View.OnClickListener 
             if (jsonStr != null) {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
-                    addstatus = jsonObj.getBoolean("success");
+                    addStatus = jsonObj.getBoolean("success");
 
-                } catch (final JSONException e) {
+                }catch (final JSONException e) {
                     Log.e(TAG, "Json parsing error: " + e.getMessage());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),
-                                    "Json parsing error: " + e.getMessage(),
-                                    Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    });
 
                 }
+
             } else {
                 Log.e(TAG, "Couldn't get json from server.");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(),
-                                "Couldn't get json from server. Check LogCat for possible errors!",
-                                Toast.LENGTH_LONG)
-                                .show();
-                    }
-                });
 
             }
             return null;
@@ -283,13 +264,14 @@ public class AddItems extends AppCompatActivity implements View.OnClickListener 
             if (pDialog.isShowing())
                 pDialog.dismiss();
 
-            if (addstatus) {
+            if (addStatus) {
                 Toast.makeText(getApplicationContext(), "Item added Successfully", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getApplicationContext(), ContentActivity.class);
                 intent.putExtra("Username", username);
                 startActivity(intent);
-            } else if (!addstatus) {
-                Toast.makeText(getApplicationContext(), "You are not authorized to add Items", Toast.LENGTH_LONG).show();
+
+            } else if (!addStatus) {
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getApplicationContext(), ContentActivity.class);
                 intent.putExtra("Username", username);
                 startActivity(intent);
@@ -297,6 +279,20 @@ public class AddItems extends AppCompatActivity implements View.OnClickListener 
         }
 
 
+    }
+
+    private boolean isValidQuantity(String quantity){
+        Pattern QUANTITY_PATTERN = Pattern.compile("^[1-9][0-9]{0,4}");
+        return QUANTITY_PATTERN.matcher(quantity).matches();
+    }
+
+    private boolean isValidPrice(String price){
+        Pattern PRICE_PATTERN = Pattern.compile("(^[1-9][0-9]{1,6}[\\.]?[0-9]*)");
+        return PRICE_PATTERN.matcher(price).matches();
+    }
+    private boolean isValidTitle(String title){
+        Pattern TITLE_PATTERN = Pattern.compile("^[A-Za-z][A-Za-z0-9\\-\\.@&]+");
+        return TITLE_PATTERN.matcher(title).matches();
     }
 }
 

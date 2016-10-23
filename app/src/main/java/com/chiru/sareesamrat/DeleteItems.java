@@ -1,9 +1,11 @@
 package com.chiru.sareesamrat;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,27 +23,45 @@ public class DeleteItems extends AppCompatActivity {
     Button button;
     ProgressDialog pDialog;
     private static String TAG = DeleteItems.class.getSimpleName();
-    String username,itemtitle;
-    Boolean deletestatus;
+    String username, itemTitle,message = "Network Problem";
+    Boolean deleteStatus = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_items);
 
-        setupsubViews();
+        setUpSubViews();
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                itemtitle = editText.getText().toString();
-                new DeleteselectedItem().execute();
+                itemTitle = editText.getText().toString();
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(DeleteItems.this);
+                alertDialog.setTitle("Confirm To Delete");
+
+                alertDialog.setMessage("Are you sure you want to delete this Item??");
+
+                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int which) {
+
+                        new DeleteSelectedItem().execute();
+                    }
+                });
+
+                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                alertDialog.show();
+
 
             }
         });
 
     }
-    private void setupsubViews(){
+    private void setUpSubViews(){
 
         editText = (EditText) findViewById(R.id.edittexttodeleteitemfinal);
         button = (Button) findViewById(R.id.finaldeletebutton);
@@ -51,7 +71,7 @@ public class DeleteItems extends AppCompatActivity {
 
     }
 
-    private class DeleteselectedItem extends AsyncTask<Void, Void, Void> {
+    private class DeleteSelectedItem extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -72,7 +92,7 @@ public class DeleteItems extends AppCompatActivity {
                     .appendPath("items")
                     .appendPath("delete")
                     .appendPath(username)
-                    .appendPath(itemtitle);
+                    .appendPath(itemTitle);
             ;
 
             String url = builder.build().toString();
@@ -85,32 +105,15 @@ public class DeleteItems extends AppCompatActivity {
             if (jsonStr != null) {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
-                    deletestatus= jsonObj.getBoolean("success");
+                    deleteStatus = jsonObj.getBoolean("success");
+                    message = jsonObj.getString("msg");
 
                 } catch (final JSONException e) {
                     Log.e(TAG, "Json parsing error: " + e.getMessage());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),
-                                    "Json parsing error: " + e.getMessage(),
-                                    Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    });
 
                 }
             } else {
                 Log.e(TAG, "Couldn't get json from server.");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(),
-                                "Couldn't get json from server. Check LogCat for possible errors!",
-                                Toast.LENGTH_LONG)
-                                .show();
-                    }
-                });
 
             }
             return null;
@@ -122,14 +125,14 @@ public class DeleteItems extends AppCompatActivity {
             if (pDialog.isShowing())
                 pDialog.dismiss();
 
-            if (deletestatus) {
+            if (deleteStatus) {
                 Toast.makeText(getApplicationContext(),"Item Deleted Successfully", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getApplicationContext(),ContentActivity.class);
                 intent.putExtra("Username", username);
                 startActivity(intent);
             }
             else{
-                Toast.makeText(getApplicationContext(),"Not Authorized to delete item", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getApplicationContext(),ContentActivity.class);
                 intent.putExtra("Username", username);
                 startActivity(intent);

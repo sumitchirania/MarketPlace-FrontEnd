@@ -14,6 +14,15 @@
         android:layout_height="wrap_content"
         android:id="@+id/textviewcontent"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/context"
+        android:layout_below="@+id/textviewcontent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="20dp"/>
+
 
     <Button
         android:layout_width="wrap_content"
@@ -39,9 +48,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/buttontoaddcontent"
         android:text="Add Items"
-        android:layout_alignTop="@+id/buttontoeditcontent"
-        android:layout_alignRight="@+id/buttontoeditprofile"
-        android:layout_alignEnd="@+id/buttontoeditprofile" />
+        android:layout_alignTop="@+id/buttontoeditcontent"/>
 
     <Button
         android:layout_width="wrap_content"

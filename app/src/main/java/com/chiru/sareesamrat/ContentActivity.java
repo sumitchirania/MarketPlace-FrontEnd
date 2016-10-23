@@ -1,17 +1,17 @@
 package com.chiru.sareesamrat;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,12 +22,12 @@ import org.json.JSONObject;
 public class ContentActivity extends AppCompatActivity implements View.OnClickListener {
 
     TextView textview;
-    Button deleteprofile,viewprofile,additems,edititems,deleteitems,viewitems;
-    String username, url,jsonResponse,name,email,viewurl;
-    int contact;Boolean seller;
+    Button deleteProfile, viewProfile, addItems, editItems, deleteItems, viewItems;
+    String username, url,jsonResponse,name,email, viewUrl, message = "Network Problem. Try again later";
+    long contact;
     ProgressDialog pDialog;
     String TAG = ContentActivity.class.getSimpleName();
-    Boolean deletestatus=false,readstatus=false;
+    Boolean seller, deleteStatus =false, readStatus =false;
 
 
 
@@ -43,25 +43,25 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         textview.setText("Hello" + " " + getIntent().getExtras().getString("Username"));
         username = getIntent().getExtras().getString("Username");
 
-        deleteprofile = (Button) findViewById(R.id.buttontodeleteprofile);
-        viewprofile = (Button) findViewById(R.id.buttontoviewprofile);
-        additems = (Button) findViewById(R.id.buttontoaddcontent);
-        edititems = (Button) findViewById(R.id.buttontoeditcontent);
-        deleteitems = (Button) findViewById(R.id.buttontodeletecontent);
-        viewitems = (Button) findViewById(R.id.buttontoviewcontent);
+        deleteProfile = (Button) findViewById(R.id.buttontodeleteprofile);
+        viewProfile = (Button) findViewById(R.id.buttontoviewprofile);
+        addItems = (Button) findViewById(R.id.buttontoaddcontent);
+        editItems = (Button) findViewById(R.id.buttontoeditcontent);
+        deleteItems = (Button) findViewById(R.id.buttontodeletecontent);
+        viewItems = (Button) findViewById(R.id.buttontoviewcontent);
 
 
-        deleteprofile.setOnClickListener(this);
+        deleteProfile.setOnClickListener(this);
 
-        viewprofile.setOnClickListener(this);
+        viewProfile.setOnClickListener(this);
 
-        additems.setOnClickListener(this);
+        addItems.setOnClickListener(this);
 
-        edititems.setOnClickListener(this);
+        editItems.setOnClickListener(this);
 
-        deleteitems.setOnClickListener(this);
+        deleteItems.setOnClickListener(this);
 
-        viewitems.setOnClickListener(this);
+        viewItems.setOnClickListener(this);
     }
 
 
@@ -70,7 +70,25 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         switch (view.getId()) {
 
             case R.id.buttontodeleteprofile: {
-                new DeleteProfile().execute();
+
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(ContentActivity.this);
+                alertDialog.setTitle("Confirm To Delete");
+
+                alertDialog.setMessage("Confirm Deteting your Account??");
+
+                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int which) {
+
+                        new DeleteProfile().execute();
+                    }
+                });
+
+                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                alertDialog.show();
                 break;
             }
             case R.id.buttontoviewprofile: {
@@ -136,32 +154,15 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
             if (jsonStr != null) {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
-                    deletestatus= jsonObj.getBoolean("success");
+                    deleteStatus = jsonObj.getBoolean("success");
+                    message = jsonObj.getString("msg");
 
                 } catch (final JSONException e) {
                     Log.e(TAG, "Json parsing error: " + e.getMessage());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),
-                                    "Json parsing error: " + e.getMessage(),
-                                    Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    });
 
                 }
             } else {
                 Log.e(TAG, "Couldn't get json from server.");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(),
-                                "Couldn't get json from server. Check LogCat for possible errors!",
-                                Toast.LENGTH_LONG)
-                                .show();
-                    }
-                });
 
             }
             return null;
@@ -173,9 +174,12 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
             if (pDialog.isShowing())
                 pDialog.dismiss();
 
-            if (deletestatus) {
+            if (deleteStatus) {
                 Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
                 startActivity(intent);
+
+            }else{
+                Toast.makeText(ContentActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -205,10 +209,10 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                     .appendPath("read")
                     .appendPath(username);
 
-            viewurl = builder.build().toString();
+            viewUrl = builder.build().toString();
 
 
-            String jsonStr = pwordhandler.makeServiceCall(viewurl);
+            String jsonStr = pwordhandler.makeServiceCall(viewUrl);
 
             Log.e(TAG, "Response from url: " + jsonStr);
 
@@ -218,10 +222,10 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                     JSONObject jsonObj = new JSONObject(jsonStr);
                     JSONArray detail = jsonObj.getJSONArray("data");
                     JSONObject c = detail.getJSONObject(0);
-                    readstatus= jsonObj.getBoolean("success");
+                    readStatus = jsonObj.getBoolean("success");
                     name = c.getString("name");
                     email = c.getString("email");
-                    contact = c.getInt("contact_no");
+                    contact = c.getLong("contact_no");
                     seller = c.getBoolean("is_seller");
 
 
@@ -260,23 +264,19 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
             if (pDialog.isShowing())
                 pDialog.dismiss();
 
-            if (readstatus) {
+            if (readStatus) {
                 Intent intent = new Intent(getApplicationContext(),ViewProfileActivity.class);
                 intent.putExtra("name", name);
-                intent.putExtra("username", username);
+                intent.putExtra("usernameString", username);
                 intent.putExtra("email", email);
                 intent.putExtra("contact", contact);
                 intent.putExtra("seller", seller);
                 startActivity(intent);
+            }else {
+                Toast.makeText(ContentActivity.this, "Network Problem", Toast.LENGTH_SHORT).show();
             }
         }
-
-
     }
-
-
-
-
 }
 
 

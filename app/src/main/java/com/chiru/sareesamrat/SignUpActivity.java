@@ -1,6 +1,5 @@
 package com.chiru.sareesamrat;
 
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -20,15 +19,15 @@ import org.json.JSONObject;
 
 import java.util.regex.Pattern;
 
-public class SignupActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity {
 
-    private String TAG = SignupActivity.class.getSimpleName();
+    private String TAG = SignUpActivity.class.getSimpleName();
     EditText FullName, UserName, Password, RePassword, Email, ContactNo;
-    Button UserSignup;
-    RadioGroup Seller;
-    RadioButton IsSeller;
+    Button userSignUp;
+    RadioGroup seller;
+    RadioButton isSeller;
     private ProgressDialog pDialog;
-    String fullname, username, password, repassword, email, contact, seller_is;
+    String name, username, password, rePassword, email, contact, seller_is, message = "Network Problem. Try again later.";
     Boolean success = false;
 
     @Override
@@ -43,43 +42,55 @@ public class SignupActivity extends AppCompatActivity {
         Email = (EditText) findViewById(R.id.edittextemail);
         ContactNo = (EditText) findViewById(R.id.edittextcontact);
 
-        Seller = (RadioGroup) findViewById(R.id.radiogroup);
-        UserSignup = (Button) findViewById(R.id.usersignupbutton);
+        seller = (RadioGroup) findViewById(R.id.radiogroup);
+        userSignUp = (Button) findViewById(R.id.usersignupbutton);
 
-        UserSignup.setOnClickListener(new View.OnClickListener() {
+        userSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                fullname = FullName.getText().toString();
+                name = FullName.getText().toString();
                 username = UserName.getText().toString();
                 password = Password.getText().toString();
-                repassword = RePassword.getText().toString();
+                rePassword = RePassword.getText().toString();
                 email = Email.getText().toString();
                 contact = ContactNo.getText().toString();
 
-                int selectedId = Seller.getCheckedRadioButtonId();
-                IsSeller = (RadioButton) findViewById(selectedId);
-                seller_is = IsSeller.getText().toString();
-                if (seller_is.equals("Yes")){
+                int selectedId = seller.getCheckedRadioButtonId();
+                isSeller = (RadioButton) findViewById(selectedId);
+                seller_is = isSeller.getText().toString();
+                if (seller_is.equals("Yes")) {
                     seller_is = "True";
-                }
-                else{
+                } else {
                     seller_is = "False";
                 }
 
 
-                if (fullname.isEmpty()) {
-                    Toast.makeText(SignupActivity.this, "Please Enter a Name", Toast.LENGTH_LONG).show();
-                } else if (username.isEmpty()) {
-                    Toast.makeText(SignupActivity.this, "Please Choose a Username", Toast.LENGTH_LONG).show();
-                } else if (password.isEmpty()) {
-                    Toast.makeText(SignupActivity.this, "Please Choose a Password", Toast.LENGTH_LONG).show();
-                } else if (repassword.isEmpty()) {
-                    Toast.makeText(SignupActivity.this, "Please Enter the same Password again", Toast.LENGTH_LONG).show();
-                } else if (isPasswordEqual(password, repassword) == false) {
-                    Toast.makeText(SignupActivity.this, "Password doesn't match.", Toast.LENGTH_LONG).show();
-                } else {
+                if (name.isEmpty()) {
+                    Toast.makeText(SignUpActivity.this, "Please Enter a Name", Toast.LENGTH_LONG).show();
 
+                } else if (username.isEmpty()) {
+                    Toast.makeText(SignUpActivity.this, "Username required", Toast.LENGTH_LONG).show();
+
+                } else if (email.isEmpty()) {
+                    Toast.makeText(SignUpActivity.this, "Email required", Toast.LENGTH_LONG).show();
+
+                }else if (!isValidEmail(email)) {
+                    Toast.makeText(SignUpActivity.this, "Enter a valid Email", Toast.LENGTH_LONG).show();
+
+                }else if (password.isEmpty()) {
+                    Toast.makeText(SignUpActivity.this, "Please Choose a Password", Toast.LENGTH_LONG).show();
+
+                } else if (rePassword.isEmpty()) {
+                    Toast.makeText(SignUpActivity.this, "Please Enter the same Password again", Toast.LENGTH_LONG).show();
+
+                } else if (!isPasswordEqual(password, rePassword)) {
+                    Toast.makeText(SignUpActivity.this, "Password doesn't match.", Toast.LENGTH_LONG).show();
+
+                } else if (seller_is.equals("True") && contact.isEmpty()) {
+                    Toast.makeText(SignUpActivity.this, "Contact required if you are a Seller", Toast.LENGTH_LONG).show();
+
+                } else {
                     new RegisterNewUser().execute();
 
                 }
@@ -95,7 +106,7 @@ public class SignupActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(SignupActivity.this);
+            pDialog = new ProgressDialog(SignUpActivity.this);
             pDialog.setMessage("Registering...");
             pDialog.setCancelable(false);
             pDialog.show();
@@ -103,7 +114,7 @@ public class SignupActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... arg0) {
-            HttpRequestHandler pwordhandler = new HttpRequestHandler();
+            HttpRequestHandler httpRequestHandler = new HttpRequestHandler();
 
             Uri.Builder builder = new Uri.Builder();
             builder.scheme("http")
@@ -111,7 +122,7 @@ public class SignupActivity extends AppCompatActivity {
                     .appendPath("users")
                     .appendPath("create")
                     .appendPath("")
-                    .appendQueryParameter("name", fullname)
+                    .appendQueryParameter("name", name)
                     .appendQueryParameter("user_name", username)
                     .appendQueryParameter("email", email)
                     .appendQueryParameter("contact_no", contact)
@@ -120,7 +131,7 @@ public class SignupActivity extends AppCompatActivity {
             String url = builder.build().toString();
 
 
-            String jsonStr = pwordhandler.makeServiceCall(url);
+            String jsonStr = httpRequestHandler.makeServiceCall(url);
 
             Log.e(TAG, "Response from url: " + jsonStr);
 
@@ -128,18 +139,15 @@ public class SignupActivity extends AppCompatActivity {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
                     success = jsonObj.getBoolean("success");
+                    message = jsonObj.getString("msg");
 
                 } catch (final JSONException e) {
                     Log.e(TAG, "Json parsing error: " + e.getMessage());
-                    Toast.makeText(getApplicationContext(), "Json parsing error: " + e.getMessage(), Toast.LENGTH_LONG).show();
 
                 }
+
             } else {
                 Log.e(TAG, "Couldn't get json from server.");
-                Toast.makeText(getApplicationContext(), "Couldn't get json from server.",
-                                Toast.LENGTH_LONG).show();
-
-
 
             }
             return null;
@@ -148,29 +156,37 @@ public class SignupActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            if (pDialog.isShowing()){
+            if (pDialog.isShowing()) {
                 pDialog.dismiss();
             }
-
-
-            //if(confirmation==null)Toast.makeText(SignupActivity.this, "Kuch GadBad hai", Toast.LENGTH_LONG).show();
             if (success) {
-                Toast.makeText(SignupActivity.this, "Signup Successful", Toast.LENGTH_LONG).show();
+                Toast.makeText(SignUpActivity.this, "SignUp Successful", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
 
-            }else{
-                Toast.makeText(SignupActivity.this, "Kuch GadBad hai", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(SignUpActivity.this, message, Toast.LENGTH_LONG).show();
             }
 
 
         }
 
     }
+
     private boolean isPasswordEqual(String Password1, String Password2) {
-        if (Password1.equals(Password2))
-            return true;
-        else
-            return false;
+        return Password1.equals(Password2);
+
+    }
+
+    private boolean isValidEmail( String email){
+
+        final Pattern EMAIL_ADDRESS_PATTERN = Pattern.compile("[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+                "\\@" +
+                "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+                "(" +
+                "\\." +
+                "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+                ")+");
+        return EMAIL_ADDRESS_PATTERN.matcher(email).matches();
     }
 }

@@ -1,7 +1,6 @@
 package com.chiru.sareesamrat;
 
 import android.content.Context;
-import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.toolbox.ImageLoader;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -19,12 +17,14 @@ import java.util.List;
  */
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
 
-    private List<Item> itemlist;
+    private List<Item> itemList;
     private Context context;
+    private String itemimageurl;
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
-        public TextView title,price,description,quantity;
+        public TextView title,price,description,quantity,imageURL;
         public ImageView imageview;
+
 
         public ItemViewHolder(View view) {
             super(view);
@@ -32,13 +32,16 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
             price = (TextView) view.findViewById(R.id.priceofitem);
             description = (TextView) view.findViewById(R.id.descriptionofitem);
             quantity = (TextView) view.findViewById(R.id.quantityofitem);
+            imageURL = (TextView) view.findViewById(R.id.imageurlofitem);
+
             imageview = (ImageView) view.findViewById(R.id.imageofitem1);
+
         }
     }
 
 
     public ItemsAdapter(List<Item> itemlist, Context context) {
-        this.itemlist = itemlist;
+        this.itemList = itemlist;
         this.context = context;
     }
 
@@ -52,19 +55,21 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
 
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
-        Item item = itemlist.get(position);
+        Item item = itemList.get(position);
         holder.title.setText(item.getTitle());
-        holder.price.setText(item.getPrice());
+        holder.price.setText("Rs." + item.getPrice());
         holder.description.setText(item.getDescription());
         holder.quantity.setText(item.getQuantity());
+        holder.imageURL.setText(item.getImageurl());
+        itemimageurl = "http://54.214.190.100" + item.getImageurl();
 
-        Picasso.with(context).load(item.getImageurl()).placeholder(R.drawable.addimage).into(holder.imageview);
+        Picasso.with(context).load(itemimageurl).placeholder(R.drawable.addimage).into(holder.imageview);
 
     }
 
     @Override
     public int getItemCount() {
-        return itemlist.size();
+        return itemList.size();
     }
 }
 

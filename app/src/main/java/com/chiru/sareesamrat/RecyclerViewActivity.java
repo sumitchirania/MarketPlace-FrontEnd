@@ -22,13 +22,13 @@ import java.util.List;
 
 public class RecyclerViewActivity extends AppCompatActivity {
 
-    private List<Item> itemlist = new ArrayList<>();
-    private RecyclerView myrecycleview;
-    private ItemsAdapter myitemadapter;
+    private List<Item> itemList = new ArrayList<>();
+    private RecyclerView myRecycleView;
+    private ItemsAdapter myItemAdapter;
     String username;
     ProgressDialog pDialog;
     private static String TAG = RecyclerViewActivity.class.getSimpleName();
-    Boolean detailstatus;
+    Boolean detailStatus = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,29 +37,29 @@ public class RecyclerViewActivity extends AppCompatActivity {
 
         username = getIntent().getExtras().getString("Username");
 
-        setUpsubviews();
+        setUpSubViews();
 
         new GetItems().execute();
 
 
     }
 
-    private void setUpsubviews(){
+    private void setUpSubViews(){
 
-        myrecycleview = (RecyclerView) findViewById(R.id.recyclerview);
-        myitemadapter = new ItemsAdapter(itemlist,getApplicationContext());
+        myRecycleView = (RecyclerView) findViewById(R.id.recyclerview);
+        myItemAdapter = new ItemsAdapter(itemList,getApplicationContext());
 
 
     }
+
 
     private class GetItems extends AsyncTask<Void, String, String> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            // Showing progress dialog
             pDialog = new ProgressDialog(RecyclerViewActivity.this);
-            pDialog.setMessage("Displaying Itmes. Please wait..");
+            pDialog.setMessage("Displaying Items. Please wait..");
             pDialog.setCancelable(false);
             pDialog.show();
 
@@ -85,41 +85,22 @@ public class RecyclerViewActivity extends AppCompatActivity {
             if (jsonStr != null) {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
-                    detailstatus = jsonObj.getBoolean("success");
+                    detailStatus = jsonObj.getBoolean("success");
                     
-
-
                 } catch (final JSONException e) {
                     Log.e(TAG, "Json parsing error: " + e.getMessage());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),
-                                    "Json parsing error: " + e.getMessage(),
-                                    Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    });
 
                 }
+
             } else {
                 Log.e(TAG, "Couldn't get json from server.");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(),
-                                "Couldn't get json from server. Check LogCat for possible errors!",
-                                Toast.LENGTH_LONG)
-                                .show();
-                    }
-                });
 
             }
-            if(detailstatus){
-                return (jsonStr.toString());
+            if(detailStatus){
+                return (jsonStr);
             }
             else {
-                return ("Unsuccessfull");
+                return ("Failed");
             }
 
         }
@@ -131,7 +112,6 @@ public class RecyclerViewActivity extends AppCompatActivity {
 
             try{
                 JSONObject jsonObj = new JSONObject(result);
-
                 JSONArray items = jsonObj.getJSONArray("data");
 
                 for (int i = 0; i < items.length(); i++) {
@@ -142,14 +122,35 @@ public class RecyclerViewActivity extends AppCompatActivity {
                     item.quantity = c.getString("quantity");
                     item.price = c.getString("price");
                     item.imageurl = c.getString("image_uri");
+                    item.seller_id = c.getString("seller_id");
 
-                    itemlist.add(item);
+                    itemList.add(item);
                 }
 
-                myrecycleview.setLayoutManager(new LinearLayoutManager(RecyclerViewActivity.this));
-                myrecycleview.addItemDecoration(new DividerforItems(getApplicationContext(), LinearLayoutManager.VERTICAL));
-                myrecycleview.setItemAnimator(new DefaultItemAnimator());
-                myrecycleview.setAdapter(myitemadapter);
+                myRecycleView.setLayoutManager(new LinearLayoutManager(RecyclerViewActivity.this));
+                myRecycleView.setItemAnimator(new DefaultItemAnimator());
+                myRecycleView.addItemDecoration(new DividerForItems(RecyclerViewActivity.this, LinearLayoutManager.VERTICAL));
+                myRecycleView.setAdapter(myItemAdapter);
+
+                myRecycleView.addOnItemTouchListener(new RecycleViewTouchListener(getApplicationContext(), myRecycleView, new RecycleViewTouchListener.ClickListener() {
+                    @Override
+                    public void onClick(View view, int position) {
+                        Item item = itemList.get(position);
+                        Intent intent = new Intent(getApplicationContext(),NewActivity.class);
+                        intent.putExtra("title", item.getTitle());
+                        intent.putExtra("description", item.getDescription());
+                        intent.putExtra("price", item.getPrice());
+                        intent.putExtra("quantity", item.getQuantity());
+                        intent.putExtra("imageURL", item.getImageurl());
+                        intent.putExtra("seller_id", item.getSeller_id());
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onLongClick(View view, int position) {
+
+                    }
+                }));
 
 
 
